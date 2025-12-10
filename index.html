@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Drag-and-Drop Floorplan Experiment Tool</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f5f7;
+      color: #222;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      padding: 12px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .header-subtitle {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .header-right {
+      font-size: 12px;
+      color: #777;
+    }
+
+    /* Main layout */
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    /* Panel */
+    .panel {
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .panel-header {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-subtext {
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 10px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      font-size: 10px;
+      color: #555;
+      gap: 4px;
+    }
+
+    .tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #888;
+    }
+
+    /* Palette */
+    .palette-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .palette-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #555;
+      margin-top: 4px;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .shape-item {
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      cursor: grab;
+      background: #fafafa;
+      transition: box-shadow 0.15s ease, transform 0.15s ease, background 0.15s ease;
+    }
+
+    .shape-item:hover {
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+      transform: translateY(-1px);
+      background: #fdfdfd;
+    }
+
+    .shape-preview {
+      min-width: 40px;
+      min-height: 30px;
+      border-radius: 0px;
+      border: 1px dashed #bbb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .shape-meta {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .shape-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .shape-info {
+      font-size: 11px;
+      color: #666;
+    }
+
+    /* Canvas */
+    .canvas-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .canvas-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .canvas-toolbar-left {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .badge {
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    .canvas-toolbar-right {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      background: #ffffff;
+      font-size: 11px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn:hover {
+      background: #f5f5f5;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      border-color: #2563eb;
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .canvas {
+      position: relative;
+      flex: 1;
+      min-height: 360px;
+      border-radius: 0px;
+      /* Clear grid background */
+      background:
+        linear-gradient(#e0e0e0 1px, transparent 1px),
+        linear-gradient(90deg, #e0e0e0 1px, transparent 1px);
+      background-size: 20px 20px;
+      background-position: 0 0;
+      border: 1px solid #ccc;
+      overflow: hidden;
+    }
+
+    .canvas-drop-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      font-size: 13px;
+      color: #999;
+      text-align: center;
+      padding: 0 24px;
+    }
+
+    .canvas-shape {
+      position: absolute;
+      border-radius: 0px;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(37,99,235,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      padding: 4px;
+      cursor: move;
+      user-select: none;
+    }
+
+    .canvas-shape.selected {
+      box-shadow: 0 0 0 2px #1d4ed8;
+      background: rgba(59,130,246,0.18);
+    }
+
+    .canvas-shape-label {
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    /* Bottom JSON panel */
+    .bottom-panel {
+      border-top: 1px solid #eee;
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    .bottom-panel label {
+      font-size: 11px;
+      color: #666;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 80px;
+      max-height: 140px;
+      resize: vertical;
+      font-size: 11px;
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    .hint {
+      font-size: 10px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 999px;
+    }
+
+    @media (max-width: 900px) {
+      .main {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <header class="header">
+    <div>
+      <div class="header-title">Floorplan Arrangement Experiment Tool</div>
+      <div class="header-subtitle">
+        Drag room tiles from the left palette and drop them onto the grid canvas on the right.
+      </div>
+    </div>
+    <div class="header-right">
+      Drag &amp; Drop · Web-based Spatial Arrangement Task
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Palette -->
+    <section class="panel">
+      <div class="panel-header">
+        <span>Room Type Palette</span>
+        <span class="tag"><span class="tag-dot"></span> Standardized Room Types · 3 Sizes Each</span>
+      </div>
+      <div class="panel-subtext">
+        Each item is a predefined room type and size (Small / Medium / Large). Drag to place multiple copies on the canvas.
+      </div>
+
+      <div class="palette-list" id="palette">
+
+        <!-- LIVING ROOM -->
+        <div class="palette-section-title">Living Room</div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Living room" data-size="Small"
+             data-label="Living room – Small" data-width="120" data-height="80">
+          <div class="shape-preview">LR S</div>
+          <div class="shape-meta">
+            <div class="shape-name">Living room – Small</div>
+            <div class="shape-info">120 × 80 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Living room" data-size="Medium"
+             data-label="Living room – Medium" data-width="140" data-height="100">
+          <div class="shape-preview">LR M</div>
+          <div class="shape-meta">
+            <div class="shape-name">Living room – Medium</div>
+            <div class="shape-info">140 × 100 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Living room" data-size="Large"
+             data-label="Living room – Large" data-width="160" data-height="120">
+          <div class="shape-preview">LR L</div>
+          <div class="shape-meta">
+            <div class="shape-name">Living room – Large</div>
+            <div class="shape-info">160 × 120 (px)</div>
+          </div>
+        </div>
+
+        <!-- KITCHEN -->
+        <div class="palette-section-title">Kitchen</div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Kitchen" data-size="Small"
+             data-label="Kitchen – Small" data-width="100" data-height="70">
+          <div class="shape-preview">K S</div>
+          <div class="shape-meta">
+            <div class="shape-name">Kitchen – Small</div>
+            <div class="shape-info">100 × 70 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Kitchen" data-size="Medium"
+             data-label="Kitchen – Medium" data-width="120" data-height="80">
+          <div class="shape-preview">K M</div>
+          <div class="shape-meta">
+            <div class="shape-name">Kitchen – Medium</div>
+            <div class="shape-info">120 × 80 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Kitchen" data-size="Large"
+             data-label="Kitchen – Large" data-width="140" data-height="90">
+          <div class="shape-preview">K L</div>
+          <div class="shape-meta">
+            <div class="shape-name">Kitchen – Large</div>
+            <div class="shape-info">140 × 90 (px)</div>
+          </div>
+        </div>
+
+        <!-- BEDROOM -->
+        <div class="palette-section-title">Bedroom</div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Bedroom" data-size="Small"
+             data-label="Bedroom – Small" data-width="110" data-height="70">
+          <div class="shape-preview">BR S</div>
+          <div class="shape-meta">
+            <div class="shape-name">Bedroom – Small</div>
+            <div class="shape-info">110 × 70 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Bedroom" data-size="Medium"
+             data-label="Bedroom – Medium" data-width="130" data-height="90">
+          <div class="shape-preview">BR M</div>
+          <div class="shape-meta">
+            <div class="shape-name">Bedroom – Medium</div>
+            <div class="shape-info">130 × 90 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Bedroom" data-size="Large"
+             data-label="Bedroom – Large" data-width="150" data-height="110">
+          <div class="shape-preview">BR L</div>
+          <div class="shape-meta">
+            <div class="shape-name">Bedroom – Large</div>
+            <div class="shape-info">150 × 110 (px)</div>
+          </div>
+        </div>
+
+        <!-- BATHROOM -->
+        <div class="palette-section-title">Bathroom</div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Bathroom" data-size="Small"
+             data-label="Bathroom – Small" data-width="60" data-height="50">
+          <div class="shape-preview">BA S</div>
+          <div class="shape-meta">
+            <div class="shape-name">Bathroom – Small</div>
+            <div class="shape-info">60 × 50 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Bathroom" data-size="Medium"
+             data-label="Bathroom – Medium" data-width="70" data-height="60">
+          <div class="shape-preview">BA M</div>
+          <div class="shape-meta">
+            <div class="shape-name">Bathroom – Medium</div>
+            <div class="shape-info">70 × 60 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Bathroom" data-size="Large"
+             data-label="Bathroom – Large" data-width="80" data-height="70">
+          <div class="shape-preview">BA L</div>
+          <div class="shape-meta">
+            <div class="shape-name">Bathroom – Large</div>
+            <div class="shape-info">80 × 70 (px)</div>
+          </div>
+        </div>
+
+        <!-- STORAGE -->
+        <div class="palette-section-title">Storage</div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Storage" data-size="Small"
+             data-label="Storage – Small" data-width="50" data-height="50">
+          <div class="shape-preview">ST S</div>
+          <div class="shape-meta">
+            <div class="shape-name">Storage – Small</div>
+            <div class="shape-info">50 × 50 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Storage" data-size="Medium"
+             data-label="Storage – Medium" data-width="60" data-height="60">
+          <div class="shape-preview">ST M</div>
+          <div class="shape-meta">
+            <div class="shape-name">Storage – Medium</div>
+            <div class="shape-info">60 × 60 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Storage" data-size="Large"
+             data-label="Storage – Large" data-width="70" data-height="70">
+          <div class="shape-preview">ST L</div>
+          <div class="shape-meta">
+            <div class="shape-name">Storage – Large</div>
+            <div class="shape-info">70 × 70 (px)</div>
+          </div>
+        </div>
+
+        <!-- BALCONY -->
+        <div class="palette-section-title">Balcony</div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Balcony" data-size="Small"
+             data-label="Balcony – Small" data-width="80" data-height="40">
+          <div class="shape-preview">BL S</div>
+          <div class="shape-meta">
+            <div class="shape-name">Balcony – Small</div>
+            <div class="shape-info">80 × 40 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Balcony" data-size="Medium"
+             data-label="Balcony – Medium" data-width="100" data-height="50">
+          <div class="shape-preview">BL M</div>
+          <div class="shape-meta">
+            <div class="shape-name">Balcony – Medium</div>
+            <div class="shape-info">100 × 50 (px)</div>
+          </div>
+        </div>
+        <div class="shape-item" draggable="true"
+             data-room-type="Balcony" data-size="Large"
+             data-label="Balcony – Large" data-width="120" data-height="60">
+          <div class="shape-preview">BL L</div>
+          <div class="shape-meta">
+            <div class="shape-name">Balcony – Large</div>
+            <div class="shape-info">120 × 60 (px)</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Canvas + JSON -->
+    <section class="panel canvas-wrapper">
+      <div class="panel-header">
+        <span>Layout Canvas</span>
+      </div>
+      <div class="canvas-toolbar">
+        <div class="canvas-toolbar-left">
+          <span class="badge">Instructions</span>
+          <span>
+            Drag a room tile onto the grid. Select a tile and press <b>Delete</b> to remove it. Tiles snap to the grid.
+          </span>
+        </div>
+        <div class="canvas-toolbar-right">
+          <button class="btn" id="clearCanvasBtn">Clear canvas</button>
+          <button class="btn btn-primary" id="exportJsonBtn">Export layout JSON</button>
+        </div>
+      </div>
+
+      <div class="canvas" id="canvas">
+        <div class="canvas-drop-hint" id="dropHint">
+          Drop room tiles here to construct your preferred layout.<br>
+          You can move tiles around freely on the grid.
+        </div>
+      </div>
+
+      <div class="bottom-panel">
+        <label>
+          Current layout data (JSON)
+          <span style="font-weight: normal; color:#999;">Use this as the participant's response.</span>
+        </label>
+        <textarea id="layoutOutput" readonly
+                  placeholder="Click 'Export layout JSON' to generate layout data here."></textarea>
+        <div class="hint">
+          Each object is recorded as:
+          { id, roomType, size, label, x, y, width, height } (px, origin at top-left of the canvas).
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  // ===== Settings =====
+  const GRID_SIZE = 10; // snap positions to 10px grid
+
+  const canvas = document.getElementById('canvas');
+  const palette = document.getElementById('palette');
+  const dropHint = document.getElementById('dropHint');
+  const layoutOutput = document.getElementById('layoutOutput');
+  const clearCanvasBtn = document.getElementById('clearCanvasBtn');
+  const exportJsonBtn = document.getElementById('exportJsonBtn');
+
+  let draggedShapeData = null;    // data from palette
+  let shapesOnCanvas = [];        // { id, roomType, size, label, x, y, width, height }
+  let shapeIdCounter = 1;
+  let selectedShapeId = null;
+
+  // ===== Palette drag setup =====
+  palette.addEventListener('dragstart', (e) => {
+    const item = e.target.closest('.shape-item');
+    if (!item) return;
+
+    draggedShapeData = {
+      roomType: item.dataset.roomType,
+      size: item.dataset.size,
+      label: item.dataset.label,
+      width: parseInt(item.dataset.width, 10),
+      height: parseInt(item.dataset.height, 10)
+    };
+
+    e.dataTransfer.effectAllowed = 'copy';
+  });
+
+  palette.addEventListener('dragend', () => {
+    draggedShapeData = null;
+  });
+
+  // ===== Canvas drop area =====
+  canvas.addEventListener('dragover', (e) => {
+    e.preventDefault(); // allow drop
+    e.dataTransfer.dropEffect = 'copy';
+  });
+
+  canvas.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (!draggedShapeData) return;
+
+    const rect = canvas.getBoundingClientRect();
+    // convert mouse position to canvas coordinates
+    let x = e.clientX - rect.left - draggedShapeData.width / 2;
+    let y = e.clientY - rect.top - draggedShapeData.height / 2;
+
+    // snap to grid
+    x = Math.round(x / GRID_SIZE) * GRID_SIZE;
+    y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+
+    addShapeToCanvas({
+      roomType: draggedShapeData.roomType,
+      size: draggedShapeData.size,
+      label: draggedShapeData.label,
+      x,
+      y,
+      width: draggedShapeData.width,
+      height: draggedShapeData.height
+    });
+  });
+
+  // ===== Add shape to canvas =====
+  function addShapeToCanvas({ roomType, size, label, x, y, width, height }) {
+    dropHint.style.display = 'none';
+
+    const id = 'shape_' + (shapeIdCounter++);
+    const shapeEl = document.createElement('div');
+    shapeEl.className = 'canvas-shape';
+    shapeEl.style.left = x + 'px';
+    shapeEl.style.top = y + 'px';
+    shapeEl.style.width = width + 'px';
+    shapeEl.style.height = height + 'px';
+    shapeEl.dataset.id = id;
+
+    const labelEl = document.createElement('div');
+    labelEl.className = 'canvas-shape-label';
+    labelEl.innerHTML = `<b>${roomType}</b><br>${size}`;
+    shapeEl.appendChild(labelEl);
+
+    canvas.appendChild(shapeEl);
+
+    shapesOnCanvas.push({ id, roomType, size, label, x, y, width, height });
+    attachShapeEvents(shapeEl);
+    updateJsonOutput();
+  }
+
+  // ===== Shape events (select, drag-move, delete) =====
+  function attachShapeEvents(shapeEl) {
+    shapeEl.addEventListener('mousedown', onShapeMouseDown);
+    shapeEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectShape(shapeEl.dataset.id);
+    });
+  }
+
+  // deselect when clicking empty canvas
+  canvas.addEventListener('mousedown', (e) => {
+    if (e.target === canvas) {
+      selectShape(null);
+    }
+  });
+
+  function selectShape(id) {
+    selectedShapeId = id;
+    document.querySelectorAll('.canvas-shape').forEach((el) => {
+      if (el.dataset.id === id) el.classList.add('selected');
+      else el.classList.remove('selected');
+    });
+  }
+
+  // keyboard delete
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (!selectedShapeId) return;
+      deleteShape(selectedShapeId);
+      selectedShapeId = null;
+    }
+  });
+
+  function deleteShape(id) {
+    const el = canvas.querySelector(`.canvas-shape[data-id="${id}"]`);
+    if (el) el.remove();
+
+    shapesOnCanvas = shapesOnCanvas.filter((s) => s.id !== id);
+    if (shapesOnCanvas.length === 0) {
+      dropHint.style.display = 'flex';
+    }
+    updateJsonOutput();
+  }
+
+  // drag move within canvas
+  function onShapeMouseDown(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const shapeEl = e.currentTarget;
+    selectShape(shapeEl.dataset.id);
+
+    const rect = canvas.getBoundingClientRect();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const initialLeft = parseInt(shapeEl.style.left, 10);
+    const initialTop = parseInt(shapeEl.style.top, 10);
+
+    function onMouseMove(ev) {
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+
+      let newX = initialLeft + dx;
+      let newY = initialTop + dy;
+
+      // snap to grid
+      newX = Math.round(newX / GRID_SIZE) * GRID_SIZE;
+      newY = Math.round(newY / GRID_SIZE) * GRID_SIZE;
+
+      // keep inside canvas
+      newX = Math.max(0, Math.min(newX, rect.width - shapeEl.offsetWidth));
+      newY = Math.max(0, Math.min(newY, rect.height - shapeEl.offsetHeight));
+
+      shapeEl.style.left = newX + 'px';
+      shapeEl.style.top = newY + 'px';
+
+      const id = shapeEl.dataset.id;
+      const shapeData = shapesOnCanvas.find((s) => s.id === id);
+      if (shapeData) {
+        shapeData.x = newX;
+        shapeData.y = newY;
+      }
+      updateJsonOutput();
+    }
+
+    function onMouseUp() {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }
+
+  // ===== JSON output =====
+  function updateJsonOutput() {
+    const clean = shapesOnCanvas.map(({ id, roomType, size, label, x, y, width, height }) => ({
+      id, roomType, size, label, x, y, width, height
+    }));
+    layoutOutput.value = JSON.stringify(clean, null, 2);
+  }
+
+  // ===== Buttons =====
+  clearCanvasBtn.addEventListener('click', () => {
+    if (!confirm('Clear all tiles from the canvas?')) return;
+    shapesOnCanvas = [];
+    selectedShapeId = null;
+    canvas.querySelectorAll('.canvas-shape').forEach((el) => el.remove());
+    dropHint.style.display = 'flex';
+    updateJsonOutput();
+  });
+
+  exportJsonBtn.addEventListener('click', () => {
+    // When integrating with a survey backend, send layoutOutput.value via POST.
+    alert('The current layout JSON has been generated below. Save or submit this value as the participant response.');
+  });
+</script>
+</body>
+</html>
