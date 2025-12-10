@@ -548,7 +548,7 @@
         </div>
         <div class="canvas-toolbar-right">
           <button class="btn" id="clearCanvasBtn">Clear canvas</button>
-          <button class="btn btn-primary" id="exportJsonBtn">Submit</button>
+          <button class="btn btn-primary" id="exportJsonBtn">Save</button>
         </div>
       </div>
 
@@ -565,7 +565,7 @@
           <span style="font-weight: normal; color:#999;">Use this as the participant's response.</span>
         </label>
         <textarea id="layoutOutput" readonly
-                  placeholder="Click 'Submit' to generate layout data here."></textarea>
+                  placeholder="Click 'Save' to download layout data here."></textarea>
         <div class="hint">
           Each object is recorded as:
           { id, roomType, size, label, x, y, width, height } (m², origin at top-left of the canvas).
@@ -788,8 +788,19 @@
   });
 
   exportJsonBtn.addEventListener('click', () => {
-    alert('Your layout has been submitted!\nScroll down to copy the JSON response.');
-  });
+  const dataStr = layoutOutput.value;
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "floorplan_layout.json";  // 다운로드 파일 이름
+  a.click();
+
+  URL.revokeObjectURL(url);
+    alert('Your layout has been saved!');
+});
+
 </script>
 </body>
 </html>
