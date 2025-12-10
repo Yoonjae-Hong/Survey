@@ -217,11 +217,6 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
 
-    .btn:active {
-      transform: translateY(1px);
-      box-shadow: none;
-    }
-
     .btn-primary {
       border-color: #2563eb;
       background: #2563eb;
@@ -237,7 +232,6 @@
       flex: 1;
       min-height: 360px;
       border-radius: 0px;
-      /* Clear grid background */
       background:
         linear-gradient(#e0e0e0 1px, transparent 1px),
         linear-gradient(90deg, #e0e0e0 1px, transparent 1px);
@@ -264,7 +258,7 @@
       position: absolute;
       border-radius: 0px;
       background: rgba(59,130,246,0.12);
-      border: 1px solid rgba(37,99,235,0.7);
+      border: 1px solid rgba(0,0,0,0.3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -276,7 +270,6 @@
 
     .canvas-shape.selected {
       box-shadow: 0 0 0 2px #1d4ed8;
-      background: rgba(59,130,246,0.18);
     }
 
     .canvas-shape-label {
@@ -317,24 +310,6 @@
       color: #999;
       margin-top: 2px;
     }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #ccc;
-      border-radius: 999px;
-    }
-
-    @media (max-width: 900px) {
-      .main {
-        grid-template-columns: 1fr;
-      }
-    }
   </style>
 </head>
 <body>
@@ -372,25 +347,27 @@
           <div class="shape-preview">LR S</div>
           <div class="shape-meta">
             <div class="shape-name">Living room – Small</div>
-            <div class="shape-info">120 × 80 (px)</div>
+            <div class="shape-info">120 × 80 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Living room" data-size="Medium"
              data-label="Living room – Medium" data-width="140" data-height="100">
           <div class="shape-preview">LR M</div>
           <div class="shape-meta">
             <div class="shape-name">Living room – Medium</div>
-            <div class="shape-info">140 × 100 (px)</div>
+            <div class="shape-info">140 × 100 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Living room" data-size="Large"
              data-label="Living room – Large" data-width="160" data-height="120">
           <div class="shape-preview">LR L</div>
           <div class="shape-meta">
             <div class="shape-name">Living room – Large</div>
-            <div class="shape-info">160 × 120 (px)</div>
+            <div class="shape-info">160 × 120 (m²)</div>
           </div>
         </div>
 
@@ -402,25 +379,27 @@
           <div class="shape-preview">K S</div>
           <div class="shape-meta">
             <div class="shape-name">Kitchen – Small</div>
-            <div class="shape-info">100 × 70 (px)</div>
+            <div class="shape-info">100 × 70 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Kitchen" data-size="Medium"
              data-label="Kitchen – Medium" data-width="120" data-height="80">
           <div class="shape-preview">K M</div>
           <div class="shape-meta">
             <div class="shape-name">Kitchen – Medium</div>
-            <div class="shape-info">120 × 80 (px)</div>
+            <div class="shape-info">120 × 80 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Kitchen" data-size="Large"
              data-label="Kitchen – Large" data-width="140" data-height="90">
           <div class="shape-preview">K L</div>
           <div class="shape-meta">
             <div class="shape-name">Kitchen – Large</div>
-            <div class="shape-info">140 × 90 (px)</div>
+            <div class="shape-info">140 × 90 (m²)</div>
           </div>
         </div>
 
@@ -432,25 +411,27 @@
           <div class="shape-preview">BR S</div>
           <div class="shape-meta">
             <div class="shape-name">Bedroom – Small</div>
-            <div class="shape-info">110 × 70 (px)</div>
+            <div class="shape-info">110 × 70 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Bedroom" data-size="Medium"
              data-label="Bedroom – Medium" data-width="130" data-height="90">
           <div class="shape-preview">BR M</div>
           <div class="shape-meta">
             <div class="shape-name">Bedroom – Medium</div>
-            <div class="shape-info">130 × 90 (px)</div>
+            <div class="shape-info">130 × 90 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Bedroom" data-size="Large"
              data-label="Bedroom – Large" data-width="150" data-height="110">
           <div class="shape-preview">BR L</div>
           <div class="shape-meta">
             <div class="shape-name">Bedroom – Large</div>
-            <div class="shape-info">150 × 110 (px)</div>
+            <div class="shape-info">150 × 110 (m²)</div>
           </div>
         </div>
 
@@ -462,25 +443,27 @@
           <div class="shape-preview">BA S</div>
           <div class="shape-meta">
             <div class="shape-name">Bathroom – Small</div>
-            <div class="shape-info">60 × 50 (px)</div>
+            <div class="shape-info">60 × 50 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Bathroom" data-size="Medium"
              data-label="Bathroom – Medium" data-width="70" data-height="60">
           <div class="shape-preview">BA M</div>
           <div class="shape-meta">
             <div class="shape-name">Bathroom – Medium</div>
-            <div class="shape-info">70 × 60 (px)</div>
+            <div class="shape-info">70 × 60 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Bathroom" data-size="Large"
              data-label="Bathroom – Large" data-width="80" data-height="70">
           <div class="shape-preview">BA L</div>
           <div class="shape-meta">
             <div class="shape-name">Bathroom – Large</div>
-            <div class="shape-info">80 × 70 (px)</div>
+            <div class="shape-info">80 × 70 (m²)</div>
           </div>
         </div>
 
@@ -492,25 +475,27 @@
           <div class="shape-preview">ST S</div>
           <div class="shape-meta">
             <div class="shape-name">Storage – Small</div>
-            <div class="shape-info">50 × 50 (px)</div>
+            <div class="shape-info">50 × 50 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Storage" data-size="Medium"
              data-label="Storage – Medium" data-width="60" data-height="60">
           <div class="shape-preview">ST M</div>
           <div class="shape-meta">
             <div class="shape-name">Storage – Medium</div>
-            <div class="shape-info">60 × 60 (px)</div>
+            <div class="shape-info">60 × 60 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Storage" data-size="Large"
              data-label="Storage – Large" data-width="70" data-height="70">
           <div class="shape-preview">ST L</div>
           <div class="shape-meta">
             <div class="shape-name">Storage – Large</div>
-            <div class="shape-info">70 × 70 (px)</div>
+            <div class="shape-info">70 × 70 (m²)</div>
           </div>
         </div>
 
@@ -522,25 +507,27 @@
           <div class="shape-preview">BL S</div>
           <div class="shape-meta">
             <div class="shape-name">Balcony – Small</div>
-            <div class="shape-info">80 × 40 (px)</div>
+            <div class="shape-info">80 × 40 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Balcony" data-size="Medium"
              data-label="Balcony – Medium" data-width="100" data-height="50">
           <div class="shape-preview">BL M</div>
           <div class="shape-meta">
             <div class="shape-name">Balcony – Medium</div>
-            <div class="shape-info">100 × 50 (px)</div>
+            <div class="shape-info">100 × 50 (m²)</div>
           </div>
         </div>
+
         <div class="shape-item" draggable="true"
              data-room-type="Balcony" data-size="Large"
              data-label="Balcony – Large" data-width="120" data-height="60">
           <div class="shape-preview">BL L</div>
           <div class="shape-meta">
             <div class="shape-name">Balcony – Large</div>
-            <div class="shape-info">120 × 60 (px)</div>
+            <div class="shape-info">120 × 60 (m²)</div>
           </div>
         </div>
 
@@ -561,7 +548,7 @@
         </div>
         <div class="canvas-toolbar-right">
           <button class="btn" id="clearCanvasBtn">Clear canvas</button>
-          <button class="btn btn-primary" id="exportJsonBtn">Export layout JSON</button>
+          <button class="btn btn-primary" id="exportJsonBtn">Submit</button>
         </div>
       </div>
 
@@ -578,10 +565,10 @@
           <span style="font-weight: normal; color:#999;">Use this as the participant's response.</span>
         </label>
         <textarea id="layoutOutput" readonly
-                  placeholder="Click 'Export layout JSON' to generate layout data here."></textarea>
+                  placeholder="Click 'Submit' to generate layout data here."></textarea>
         <div class="hint">
           Each object is recorded as:
-          { id, roomType, size, label, x, y, width, height } (px, origin at top-left of the canvas).
+          { id, roomType, size, label, x, y, width, height } (m², origin at top-left of the canvas).
         </div>
       </div>
     </section>
@@ -590,7 +577,17 @@
 
 <script>
   // ===== Settings =====
-  const GRID_SIZE = 10; // snap positions to 10px grid
+  const GRID_SIZE = 10;
+
+  // ===== Room Color Settings =====
+  const ROOM_COLORS = {
+    "Living room": "rgba(59,130,246,0.25)",
+    "Kitchen": "rgba(34,197,94,0.25)",
+    "Bedroom": "rgba(139,92,246,0.25)",
+    "Bathroom": "rgba(239,68,68,0.25)",
+    "Storage": "rgba(250,204,21,0.25)",
+    "Balcony": "rgba(249,115,22,0.25)"
+  };
 
   const canvas = document.getElementById('canvas');
   const palette = document.getElementById('palette');
@@ -599,8 +596,8 @@
   const clearCanvasBtn = document.getElementById('clearCanvasBtn');
   const exportJsonBtn = document.getElementById('exportJsonBtn');
 
-  let draggedShapeData = null;    // data from palette
-  let shapesOnCanvas = [];        // { id, roomType, size, label, x, y, width, height }
+  let draggedShapeData = null;
+  let shapesOnCanvas = [];
   let shapeIdCounter = 1;
   let selectedShapeId = null;
 
@@ -626,7 +623,7 @@
 
   // ===== Canvas drop area =====
   canvas.addEventListener('dragover', (e) => {
-    e.preventDefault(); // allow drop
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
   });
 
@@ -635,11 +632,9 @@
     if (!draggedShapeData) return;
 
     const rect = canvas.getBoundingClientRect();
-    // convert mouse position to canvas coordinates
     let x = e.clientX - rect.left - draggedShapeData.width / 2;
     let y = e.clientY - rect.top - draggedShapeData.height / 2;
 
-    // snap to grid
     x = Math.round(x / GRID_SIZE) * GRID_SIZE;
     y = Math.round(y / GRID_SIZE) * GRID_SIZE;
 
@@ -661,6 +656,11 @@
     const id = 'shape_' + (shapeIdCounter++);
     const shapeEl = document.createElement('div');
     shapeEl.className = 'canvas-shape';
+
+    // Apply custom room color
+    shapeEl.style.background = ROOM_COLORS[roomType] || "rgba(59,130,246,0.12)";
+    shapeEl.style.borderColor = "rgba(0,0,0,0.3)";
+
     shapeEl.style.left = x + 'px';
     shapeEl.style.top = y + 'px';
     shapeEl.style.width = width + 'px';
@@ -679,7 +679,7 @@
     updateJsonOutput();
   }
 
-  // ===== Shape events (select, drag-move, delete) =====
+  // ===== Shape events =====
   function attachShapeEvents(shapeEl) {
     shapeEl.addEventListener('mousedown', onShapeMouseDown);
     shapeEl.addEventListener('click', (e) => {
@@ -688,7 +688,6 @@
     });
   }
 
-  // deselect when clicking empty canvas
   canvas.addEventListener('mousedown', (e) => {
     if (e.target === canvas) {
       selectShape(null);
@@ -703,7 +702,7 @@
     });
   }
 
-  // keyboard delete
+  // Delete key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Delete' || e.key === 'Backspace') {
       if (!selectedShapeId) return;
@@ -717,13 +716,12 @@
     if (el) el.remove();
 
     shapesOnCanvas = shapesOnCanvas.filter((s) => s.id !== id);
-    if (shapesOnCanvas.length === 0) {
-      dropHint.style.display = 'flex';
-    }
+    if (shapesOnCanvas.length === 0) dropHint.style.display = 'flex';
+
     updateJsonOutput();
   }
 
-  // drag move within canvas
+  // Drag move
   function onShapeMouseDown(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -744,11 +742,9 @@
       let newX = initialLeft + dx;
       let newY = initialTop + dy;
 
-      // snap to grid
       newX = Math.round(newX / GRID_SIZE) * GRID_SIZE;
       newY = Math.round(newY / GRID_SIZE) * GRID_SIZE;
 
-      // keep inside canvas
       newX = Math.max(0, Math.min(newX, rect.width - shapeEl.offsetWidth));
       newY = Math.max(0, Math.min(newY, rect.height - shapeEl.offsetHeight));
 
@@ -792,8 +788,7 @@
   });
 
   exportJsonBtn.addEventListener('click', () => {
-    // When integrating with a survey backend, send layoutOutput.value via POST.
-    alert('The current layout JSON has been generated below. Save or submit this value as the participant response.');
+    alert('Your layout has been submitted!\nScroll down to copy the JSON response.');
   });
 </script>
 </body>
